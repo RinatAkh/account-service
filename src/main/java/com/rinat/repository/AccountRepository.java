@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class AccountRepository {
     @Autowired
@@ -34,4 +36,10 @@ public class AccountRepository {
         return jdbcTemplate. queryForObject(sql, Boolean.class, nickname);
     }
 
+    public List<String> getNicknames() {
+        String sql = """
+                    SELECT nickname FROM users;
+                """;
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
 }
