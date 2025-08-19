@@ -1,3 +1,10 @@
 server:
   port: 8080
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/user
+    username: rinat
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+
