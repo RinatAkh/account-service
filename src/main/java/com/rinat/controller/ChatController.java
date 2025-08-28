@@ -17,6 +17,9 @@ public class ChatController {
     private final ChatService chatService;
     @PostMapping("/create")
     public ResponseEntity<String> createChat(@RequestBody CreateChatRequest request) {
+        if(request.getUsersIds() == null || request.getUsersIds().size() != 2)
+            throw new IllegalArgumentException("Список пустой илм не содержит всех пользователей");
+
         chatService.createChat(request);
         return  ResponseEntity.ok("Ваш чат успешно создан");
     }

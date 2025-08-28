@@ -7,5 +7,6 @@ import java.util.UUID;
 
 @Data
 public class CreateChatRequest {
+
     private List<UUID> usersIds;
 }

@@ -1,18 +1,23 @@
 package com.rinat.repository;
 
+import com.rinat.model.CreateChatRequest;
 import com.rinat.model.UserRegistrationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class AccountRepository {
+public class UserRepository {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void saveAccount(UserRegistrationInfo registrationInfo) {
+    public void save(UserRegistrationInfo registrationInfo) {
 
         String sql = """
                 INSERT INTO users(id, name, surname, nickname, dateofbirth, email, password)
@@ -41,5 +46,21 @@ public class AccountRepository {
                     SELECT nickname FROM users;
                 """;
         return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    // Метод проверяет есть ли такие user'ы в нашей бд
+    public boolean exist(CreateChatRequest request) {
+        List<UUID> userIds = request.getUsersIds();
+
+        String sql = "SELECT COUNT(*) FROM users WHERE id IN (?, ?)";
+
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                userIds.get(0),
+                userIds.get(1)
+        );
+
+        return userIds.size() == count;
     }
 }
