@@ -1,6 +1,6 @@
-package com.rinat.model;
+package com.rinat.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;

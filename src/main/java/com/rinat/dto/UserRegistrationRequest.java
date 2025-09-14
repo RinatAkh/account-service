@@ -1,11 +1,11 @@
-package com.rinat.model;
+package com.rinat.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
-public class UserRegistrationInfo {
+public class UserRegistrationRequest {
     private String name;
     private String surname;
     private String nickname;
