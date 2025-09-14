@@ -1,6 +1,6 @@
 package com.rinat.controller;
 
-import com.rinat.model.CreateChatRequest;
+import com.rinat.dto.CreateChatRequest;
 import com.rinat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,11 @@ public class ChatController {
     private final ChatService chatService;
     @PostMapping("/create")
     public ResponseEntity<String> createChat(@RequestBody CreateChatRequest request) {
-        if(request.getUsersIds() == null || request.getUsersIds().size() != 2)
-            throw new IllegalArgumentException("Список пустой илм не содержит всех пользователей");
+        if(request.getUsersIds() == null)
+            throw new IllegalArgumentException("Список пустой");
+        if(request.getUsersIds().size() != 2) {
+            throw new IllegalArgumentException("Список не содержит всех пользователей");
+        }
 
         chatService.createChat(request);
         return  ResponseEntity.ok("Ваш чат успешно создан");

@@ -1,6 +1,6 @@
 package com.rinat.controller;
 
-import com.rinat.model.UserRegistrationInfo;
+import com.rinat.dto.UserRegistrationRequest;
 import com.rinat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegistrationInfo registrationInfo) {
+    public ResponseEntity<String> register(@RequestBody UserRegistrationRequest registrationInfo) {
         try {
             userService.register(registrationInfo);
         } catch (Exception exception) {

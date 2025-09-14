@@ -1,21 +1,21 @@
 package com.rinat.repository;
 
-import com.rinat.model.CreateChatRequest;
+import com.rinat.dto.CreateChatRequest;
+import com.rinat.dto.UserRegistrationRequest;
 import com.rinat.model.UserRegistrationInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Array;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
 
     public void save(UserRegistrationInfo registrationInfo) {
 
@@ -49,8 +49,7 @@ public class UserRepository {
     }
 
     // Метод проверяет есть ли такие user'ы в нашей бд
-    public boolean exist(CreateChatRequest request) {
-        List<UUID> userIds = request.getUsersIds();
+    public boolean exist(List<UUID> userIds) {
 
         String sql = "SELECT COUNT(*) FROM users WHERE id IN (?, ?)";
 
