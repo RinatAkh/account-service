@@ -1,6 +1,7 @@
 package com.rinat.service;
 
 import com.rinat.dto.CreateChatRequest;
+import com.rinat.dto.CreateChatRequestOld;
 import com.rinat.repository.ChatRepository;
 import com.rinat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

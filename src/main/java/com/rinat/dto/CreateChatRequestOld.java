@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class CreateChatRequest {
+public class CreateChatRequestOld {
 
     private List<UUID> usersIds;
 }

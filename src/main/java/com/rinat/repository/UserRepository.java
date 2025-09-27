@@ -1,8 +1,8 @@
 package com.rinat.repository;
 
-import com.rinat.dto.CreateChatRequest;
-import com.rinat.dto.UserRegistrationRequest;
+
 import com.rinat.model.UserRegistrationInfo;
+import com.rinat.model.UserRegistrationInfoShort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,21 +17,28 @@ public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void save(UserRegistrationInfo registrationInfo) {
+    public UserRegistrationInfoShort save(UserRegistrationInfo registrationInfo) {
 
         String sql = """
-                INSERT INTO users(id, name, surname, nickname, dateofbirth, email, password)
-                VALUES(gen_random_uuid(),?, ?, ?, ?, ?, ?)
-                ON CONFLICT (nickname) DO NOTHING;
-                """;
+            INSERT INTO users (id, name, surname, nickname, dateofbirth, email, password)
+            VALUES (gen_random_uuid(), ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (nickname) DO NOTHING
+            RETURNING name, surname, nickname;
+            """;
 
-        jdbcTemplate.update(sql,
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new UserRegistrationInfoShort(
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        rs.getString("nickname")
+                ),
                 registrationInfo.getName(),
                 registrationInfo.getSurname(),
                 registrationInfo.getNickname(),
                 registrationInfo.getDateOfBirth(),
                 registrationInfo.getEmail(),
-                registrationInfo.getPassword());
+                registrationInfo.getPassword()
+        );
     }
 
     public boolean exist(String nickname) {
