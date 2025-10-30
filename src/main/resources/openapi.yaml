@@ -1,0 +1,226 @@
+openapi: 3.0.1
+info:
+  title: Account API
+  version: 1.0.0
+
+paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /register:
+    post:
+      tags:
+        - User
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '200':
+          description: Return created User
+          content:
+            application/json:
+              schema:
+                $ref:  '#/components/schemas/UserRegisterResponse'
+  /chat/create:
+    post:
+      tags:
+        - Chat
+      summary: Create new chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatRequest'
+      responses:
+        '200':
+          description: Return message "Ваш чат успешно создан"
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /chat/history:
+    get:
+      tags:
+        - Chat
+      summary: Get chat history
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: chat information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatHistoryResponse'
+
+
+  /messages:
+    post:
+      tags:
+        - Message
+      summary: Отправить сообщение
+      description: Создает новое сообщение и отправляет его указанному получателю.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: Сообщение успешно отправлено
+        '400':
+          description: Некорректные данные
+        '401':
+          description: Не авторизован
+
+  /statistics:
+    get:
+      tags:
+        - Statistics
+      summary: Получение количества отправленных сообщений
+      responses:
+        '200':
+          description: List of statistic of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserStatisticInfo'
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    UserRegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        nickname:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+        password:
+          type: string
+
+    UserRegisterResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        nickname:
+          type: string
+
+    CreateChatRequest:
+      type: object
+      properties:
+        usersIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    SendMessageRequest:
+      type: object
+      properties:
+        senderUserId:
+          type: string
+          format: uuid
+        chatId:
+          type: string
+          format: uuid
+        message:
+          $ref: "#/components/schemas/Message"
+
+    Message:
+      type: object
+      properties:
+        text:
+          type: string
+
+    ChatHistoryResponse:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatHistoryMessage'
+
+
+    ChatHistoryMessage:
+      type: object
+      properties:
+        sender:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            nickname:
+              type: string
+
+        message:
+          type: object
+          properties:
+            text:
+              type: string
+
+    UserStatisticInfo:
+      type: object
+      properties:
+        statistic:
+            $ref: '#/components/schemas/Statistic'
+        user:
+          $ref: '#/components/schemas/UserInfo'
+
+    Statistic:
+      type: object
+      properties:
+        sentMessageCount:
+          type: integer
+          format: int64
+
+
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: string
