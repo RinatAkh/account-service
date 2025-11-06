@@ -1,6 +1,7 @@
 package com.rinat.repository;
 
 
+import com.rinat.dto.UserStatisticInfo;
 import com.rinat.model.UserRegistrationInfo;
 import com.rinat.model.UserRegistrationInfoShort;
 import lombok.RequiredArgsConstructor;
