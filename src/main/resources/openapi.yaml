@@ -110,6 +110,20 @@ paths:
                 items:
                   $ref: '#/components/schemas/UserStatisticInfo'
 
+  /statistics/month:
+    get:
+      tags:
+        - Statistics
+      summary: Получение количества отправленных сообщений за месяц
+      responses:
+        '200':
+          description: List of statistic of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserStatisticInfo'
 
 components:
   schemas:
