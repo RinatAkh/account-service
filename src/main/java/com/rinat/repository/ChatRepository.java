@@ -1,36 +1,30 @@
 package com.rinat.repository;
 
-import com.rinat.model.CreateChatRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Array;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 
 @Repository
+@RequiredArgsConstructor
 public class ChatRepository {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
-    public void saveChat(CreateChatRequest request) {
-        // TODO Сделать запрос который создат чат и второй запрос который соеденит наших пользователей и чат
-        List<UUID> users = request.getUsersIds();
+    private final JdbcTemplate jdbcTemplate;
 
+    // TODO Сделать запрос который создат чат и второй запрос который соеденит наших пользователей и чат
+    public UUID saveToChat() {
         String insertChatSql = """
                     INSERT INTO chats (id, createddate, deleted)
                     VALUES (gen_random_uuid(), now(), false)
                     RETURNING id
                 """;
-        UUID chatId = jdbcTemplate.queryForObject(insertChatSql, UUID.class);
+        return jdbcTemplate.queryForObject(insertChatSql, UUID.class);
+    }
 
-        // 2) вставляем всех пользователей в chat_users
+    public void saveToChatUsers(List<UUID> users, UUID chatId) {
         String insertChatUsersSql = """
                     INSERT INTO chat_users (chatid, userid)
                     VALUES (?, ?)
@@ -47,9 +41,7 @@ public class ChatRepository {
         );
     }
 
-    public boolean exist(CreateChatRequest request) {
-        List<UUID> userIds = request.getUsersIds();
-
+    public boolean exist(List<UUID> userIds) {
         String sql = """
         SELECT EXISTS (
             SELECT 1
@@ -58,7 +50,6 @@ public class ChatRepository {
             WHERE c1.userid = ? AND c2.userid = ?
         )
         """;
-
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(sql, Boolean.class, userIds.get(0), userIds.get(1))
         );

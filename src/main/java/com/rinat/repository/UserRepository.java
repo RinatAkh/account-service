@@ -1,37 +1,45 @@
 package com.rinat.repository;
 
-import com.rinat.model.CreateChatRequest;
+
+import com.rinat.dto.UserStatisticInfo;
 import com.rinat.model.UserRegistrationInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rinat.model.UserRegistrationInfoShort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Array;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
-    public void save(UserRegistrationInfo registrationInfo) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public UserRegistrationInfoShort save(UserRegistrationInfo registrationInfo) {
 
         String sql = """
-                INSERT INTO users(id, name, surname, nickname, dateofbirth, email, password)
-                VALUES(gen_random_uuid(),?, ?, ?, ?, ?, ?)
-                ON CONFLICT (nickname) DO NOTHING;
-                """;
+            INSERT INTO users (id, name, surname, nickname, dateofbirth, email, password)
+            VALUES (gen_random_uuid(), ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (nickname) DO NOTHING
+            RETURNING name, surname, nickname;
+            """;
 
-        jdbcTemplate.update(sql,
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new UserRegistrationInfoShort(
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        rs.getString("nickname")
+                ),
                 registrationInfo.getName(),
                 registrationInfo.getSurname(),
                 registrationInfo.getNickname(),
                 registrationInfo.getDateOfBirth(),
                 registrationInfo.getEmail(),
-                registrationInfo.getPassword());
+                registrationInfo.getPassword()
+        );
     }
 
     public boolean exist(String nickname) {
@@ -49,8 +57,7 @@ public class UserRepository {
     }
 
     // Метод проверяет есть ли такие user'ы в нашей бд
-    public boolean exist(CreateChatRequest request) {
-        List<UUID> userIds = request.getUsersIds();
+    public boolean exist(List<UUID> userIds) {
 
         String sql = "SELECT COUNT(*) FROM users WHERE id IN (?, ?)";
 

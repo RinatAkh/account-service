@@ -1,6 +1,9 @@
 package com.rinat.controller;
 
-import com.rinat.model.UserRegistrationInfo;
+import com.rinat.dto.User;
+import com.rinat.dto.UserRegisterRequest;
+import com.rinat.dto.UserRegisterResponse;
+import com.rinat.dto.UserRegistrationRequest;
 import com.rinat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,24 +18,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi{
 
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegistrationInfo registrationInfo) {
+    @Override
+    public ResponseEntity<UserRegisterResponse> registerPost(UserRegisterRequest userRegisterRequest) {
         try {
-            userService.register(registrationInfo);
+            UserRegisterResponse response = userService.register(userRegisterRequest);
+            return ResponseEntity.ok(response);
         } catch (Exception exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.ok("Все прошло успешно");
     }
-
-    @GetMapping("/nicknames")
-    public ResponseEntity<List<String>> getUserNicknames() {
-        return ResponseEntity.ok(userService.getNicknames());
-    }
-
 
 }

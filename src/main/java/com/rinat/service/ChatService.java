@@ -1,25 +1,30 @@
 package com.rinat.service;
 
-import com.rinat.model.CreateChatRequest;
+import com.rinat.dto.CreateChatRequest;
+import com.rinat.dto.CreateChatRequestOld;
 import com.rinat.repository.ChatRepository;
 import com.rinat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    // Нам нужно проверить если у таких пользователей общий чат
-    // Что проверяем? Что нельзя создать чат с уже существующими
-    // Что нельзя создаь чат с одним и тем же пользователем
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
+
     public void createChat(CreateChatRequest request) {
-        if(userRepository.exist(request) && !chatRepository.exist(request)){
-            chatRepository.saveChat(request);
-        } else {
-            throw new IllegalArgumentException("К сожалению, пользователи не найдены или такой чат уже существует");
-        }
+        List<UUID> usersIds = request.getUsersIds();
+        if(!userRepository.exist(usersIds))
+            throw new IllegalArgumentException("К сожалению, пользователь или пользователи не найдены");
+        if (chatRepository.exist(usersIds))
+            throw new IllegalArgumentException("К сожалению, такой чат уже существует");
+
+        UUID chatId = chatRepository.saveToChat();
+        chatRepository.saveToChatUsers(request.getUsersIds(), chatId);
     }
 }
